@@ -17,10 +17,12 @@ async function guardarRegistro(data) {
   const hojaNombre = "Formulario";
   let worksheet;
 
+  // Si el archivo ya existe
   if (fs.existsSync(excelPath)) {
     await workbook.xlsx.readFile(excelPath);
     worksheet = workbook.getWorksheet(hojaNombre) || workbook.addWorksheet(hojaNombre);
   } else {
+    // Si el archivo no existe, crea una hoja nueva con encabezados
     worksheet = workbook.addWorksheet(hojaNombre);
     worksheet.addRow([
       "Nombre",
@@ -33,38 +35,33 @@ async function guardarRegistro(data) {
     ]);
   }
 
+  // Agrega una nueva fila con los datos que llegan del frontend
   worksheet.addRow([
-    data.firstName,
-    data.lastName,
-    data.favoriteSport,
-    data.gender,
-    data.state,
-    data.is21OrOlder ? "Sí" : "No",
-    data.carModels.join(", ")
+    data.nombre,
+    data.apellido,
+    data.deporte,
+    data.genero,
+    data.departamento,
+    data.mayorEdad,
+    data.autos
   ]);
 
   await workbook.xlsx.writeFile(excelPath);
 }
 
-app.post("/api/guardar", async (req, res) => {
-  console.log("📥 Recibido en backend:", req.body);
+app.post("/guardar", async (req, res) => {
+  const datos = req.body;
+  console.log("📥 Recibido en backend:", datos);
+
   try {
-    await guardarRegistro(req.body);
-    console.log("✅ Registro guardado correctamente");
-    res.json({ message: "Datos guardados correctamente." });
-  } catch (err) {
-    console.error("❌ Error al guardar:", err);
-
-    if (err.code === "EBUSY") {
-      return res.status(423).json({
-        error: "El archivo está en uso. Cierra Excel y vuelve a intentar.",
-      });
-    }
-
-    res.status(500).json({ error: "Error al guardar el registro." });
+    await guardarRegistro(datos);
+    res.status(200).send("Registro guardado correctamente");
+  } catch (error) {
+    console.error("❌ Error al guardar:", error);
+    res.status(500).send("Error al guardar");
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor iniciado en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor iniciado en http://localhost:${PORT}`);
 });

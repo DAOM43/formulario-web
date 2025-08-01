@@ -1,139 +1,158 @@
 import { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/FormStyles.css";
 import axios from "axios";
 
-const deportes = ["fútbol", "baloncesto", "natación", "tenis", "béisbol"];
-const departamentos = [
-  "Guatemala", "Sacatepéquez", "Chimaltenango", "Escuintla", "Santa Rosa",
-  "Jalapa", "Jutiapa", "Petén", "Izabal", "Zacapa", "Chiquimula", "El Progreso",
-  "Baja Verapaz", "Alta Verapaz", "Quiché", "Huehuetenango", "Sololá", "Totonicapán",
-  "Quetzaltenango", "San Marcos", "Suchitepéquez", "Retalhuleu"
-];
-
-const modelosAutos = ["Ford", "Chrysler", "Toyota", "Nissan"];
-
-export default function Form() {
+const Form = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    favoriteSport: deportes[0],
-    gender: "",
-    state: departamentos[0],
-    is21OrOlder: false,
-    carModels: [] as string[],
+    nombre: "",
+    apellido: "",
+    deporte: "fútbol",
+    genero: "",
+    departamento: "Guatemala",
+    mayorEdad: false,
+    autos: {
+      ford: false,
+      chrysler: false,
+      toyota: false,
+      nissan: false,
+    },
   });
 
- const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const target = e.target as HTMLInputElement; // <--- esta línea es clave
-  const { name, value, type } = target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const target = e.target as HTMLInputElement;
+    const { name, value, type, checked, id } = target;
 
-  if (type === "checkbox" && name === "carModels") {
-    const checked = target.checked;
-    setFormData((prev) => {
-      const carModels = checked
-        ? [...prev.carModels, value]
-        : prev.carModels.filter((model) => model !== value);
-      return { ...prev, carModels };
-    });
-  } else if (type === "checkbox") {
-    const checked = target.checked;
-    setFormData({ ...formData, [name]: checked });
-  } else {
-    setFormData({ ...formData, [name]: value });
-  }
-};
+    if (name === "autos") {
+      setFormData((prev) => ({
+        ...prev,
+        autos: {
+          ...prev.autos,
+          [id]: checked,
+        },
+      }));
+    } else if (type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
-      await axios.post("http://localhost:3001/api/guardar", formData);
-      alert("✅ Datos guardados correctamente.");
+      const autosSeleccionados = Object.entries(formData.autos)
+        .filter(([_, v]) => v)
+        .map(([k]) => k);
+
+      const data = {
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        deporte: formData.deporte,
+        genero: formData.genero,
+        departamento: formData.departamento,
+        mayorEdad: formData.mayorEdad ? "Sí" : "No",
+        autos: autosSeleccionados.join(", "),
+      };
+
+      await axios.post("http://localhost:3001/guardar", data);
+      alert("✅ Datos guardados correctamente en Excel");
     } catch (error) {
-      console.error("Error al enviar datos:", error);
-      alert("❌ Ocurrió un error al guardar los datos.");
+      console.error(error);
+      alert("❌ Error al guardar los datos");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-3 border rounded">
-      <h2 className="mb-3">Actualizar Información</h2>
+    <div className="fullscreen-center">
+    <div className="form-wrapper">
+      <h3>Actualizar Información</h3>
+      
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="nombre" className="form-label">Nombre:</label>
+            <input type="text" className="form-control" id="nombre" name="nombre" value={formData.nombre} onChange={handleChange} />
+          </div>
 
-      <input
-        name="firstName"
-        placeholder="First name"
-        value={formData.firstName}
-        onChange={handleChange}
-        className="form-control mb-2"
-        required
-      />
+          <div className="mb-3">
+            <label htmlFor="apellido" className="form-label">Apellido:</label>
+            <input type="text" className="form-control" id="apellido" name="apellido" value={formData.apellido} onChange={handleChange} />
+          </div>
 
-      <input
-        name="lastName"
-        placeholder="Last name"
-        value={formData.lastName}
-        onChange={handleChange}
-        className="form-control mb-2"
-        required
-      />
+          <div className="mb-3">
+            <label className="form-label">Deporte favorito:</label>
+            <select className="form-select" name="deporte" value={formData.deporte} onChange={handleChange}>
+              <option value="fútbol">Fútbol</option>
+              <option value="béisbol">Béisbol</option>
+              <option value="natación">Natación</option>
+              <option value="baloncesto">Baloncesto</option>
+              <option value="tenis">Tenis</option>
+            </select>
+          </div>
 
-      <label>Favorite sport:</label>
-      <select
-        name="favoriteSport"
-        value={formData.favoriteSport}
-        onChange={handleChange}
-        className="form-select mb-2"
-      >
-        {deportes.map((sport) => (
-          <option key={sport}>{sport}</option>
-        ))}
-      </select>
+          <div className="mb-3">
+            <label className="form-label">Género:</label><br />
+            {["Masculino", "Femenino", "No estoy seguro"].map((gen) => (
+              <div className="form-check form-check-inline" key={gen}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="genero"
+                  id={gen}
+                  value={gen}
+                  checked={formData.genero === gen}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor={gen}>{gen}</label>
+              </div>
+            ))}
+          </div>
 
-      <div className="mb-2">
-        <label>Gender:</label><br />
-        <input type="radio" name="gender" value="male" onChange={handleChange} /> Male
-        <input type="radio" name="gender" value="female" onChange={handleChange} className="ms-3" /> Female
-        <input type="radio" name="gender" value="not sure" onChange={handleChange} className="ms-3" /> Not sure
+          <div className="mb-3">
+            <label className="form-label">Departamento:</label>
+            <select className="form-select" name="departamento" value={formData.departamento} onChange={handleChange}>
+              <option>Guatemala</option>
+              <option>Santa Rosa</option>
+              <option>Huehuetenango</option>
+              <option>Chiquimula</option>
+              <option>Petén</option>
+            </select>
+          </div>
+
+          <div className="form-check mb-3">
+            <input className="form-check-input" type="checkbox" id="mayorEdad" name="mayorEdad" checked={formData.mayorEdad} onChange={handleChange} />
+            <label className="form-check-label" htmlFor="mayorEdad">✓ 21 años o más</label>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Modelos de autos:</label><br />
+            {Object.keys(formData.autos).map((auto) => (
+              <div className="form-check" key={auto}>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id={auto}
+                  name="autos"
+                  checked={formData.autos[auto as keyof typeof formData.autos]}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor={auto}>{auto.charAt(0).toUpperCase() + auto.slice(1)}</label>
+              </div>
+            ))}
+          </div>
+
+          <button type="submit" className="btn btn-green w-100">Guardar Cambios</button>
+        </form>
       </div>
-
-      <label>State resident:</label>
-      <select
-        name="state"
-        value={formData.state}
-        onChange={handleChange}
-        className="form-select mb-2"
-      >
-        {departamentos.map((dep) => (
-          <option key={dep}>{dep}</option>
-        ))}
-      </select>
-
-      <div className="form-check mb-2">
-        <input
-          type="checkbox"
-          className="form-check-input"
-          name="is21OrOlder"
-          checked={formData.is21OrOlder}
-          onChange={handleChange}
-        />
-        <label className="form-check-label">21 or older</label>
-      </div>
-
-      <label>Car models owned:</label>
-      <div className="mb-3">
-        {modelosAutos.map((model) => (
-          <label key={model} className="me-3">
-            <input
-              type="checkbox"
-              name="carModels"
-              value={model}
-              onChange={handleChange}
-              className="me-1"
-            />
-            {model}
-          </label>
-        ))}
-      </div>
-
-      <button type="submit" className="btn btn-primary">Save Changes</button>
-    </form>
+    </div>
   );
-}
+};
+
+export default Form;
