@@ -88,6 +88,19 @@ app.post("/guardar", async (req, res) => {
   }
 });
 
+app.get("/descargar-excel", (req, res) => {
+  if (!fs.existsSync(excelPath)) {
+    return res.status(404).send("❌ No se encontró el archivo Excel.");
+  }
+
+  res.download(excelPath, "Datos_Formulario.xlsx", (err) => {
+    if (err) {
+      console.error("❌ Error al descargar:", err.message);
+      res.status(500).send("Error al descargar el archivo.");
+    }
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });

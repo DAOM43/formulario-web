@@ -70,11 +70,16 @@ const Form = () => {
     }
   };
 
+  // ✅ Botón para descargar Excel
+  const handleDescargar = () => {
+    window.open("http://localhost:3001/descargar-excel", "_blank");
+  };
+
   return (
     <div className="fullscreen-center">
-    <div className="form-wrapper">
-      <h3>Actualizar Información</h3>
-      
+      <div className="form-wrapper">
+        <h3>Actualizar Información</h3>
+
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="nombre" className="form-label">Nombre:</label>
@@ -148,7 +153,12 @@ const Form = () => {
             ))}
           </div>
 
-          <button type="submit" className="btn btn-green w-100">Guardar Cambios</button>
+          <button type="submit" className="btn btn-green w-100 mb-2">Guardar Cambios</button>
+
+          {/* ✅ Botón de descarga */}
+          <button type="button" className="btn btn-success w-100" onClick={handleDescargar}>
+            Descargar Excel
+          </button>
         </form>
       </div>
     </div>
