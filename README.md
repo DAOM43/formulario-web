@@ -1,69 +1,74 @@
-# React + TypeScript + Vite
+#Formulario Web con React y Node.js (ExcelJS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este es un proyecto completo que incluye tanto el **frontend como el backend en un mismo repositorio**. Fue creado como una tarea universitaria y consiste en un formulario web que permite registrar datos personales y guardarlos en un archivo Excel (`registros.xlsx`) de forma local.
 
-Currently, two official plugins are available:
+#Tecnologías Utilizadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React + Vite + TypeScript** (Frontend)
+- **Node.js + Express** (Backend)
+- **Bootstrap 5** para los estilos
+- **Axios** para la comunicación entre frontend y backend
+- **ExcelJS** para manipular archivos Excel (.xlsx)
 
-## Expanding the ESLint configuration
+#Estructura del Proyecto
+formulario-web/
+├── public/
+├── server/
+│ ├── excel/
+│ │ └── registros.xlsx ⬅ Aquí se guardan los registros localmente
+│ └── index.js ⬅ Backend con Express y ExcelJS
+├── src/
+│ ├── components/
+│ │ └── Form.tsx ⬅ Componente principal del formulario
+│ ├── styles/
+│ │ └── FormStyles.css
+│ ├── App.tsx
+│ └── main.tsx
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+#Proyecto en línea
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+> El proyecto fue desplegado en **Vercel** y está conectado a un repositorio de GitHub, sin embargo, **solo funciona correctamente de forma local**, ya que el backend necesita acceso al sistema de archivos para guardar el archivo Excel, lo cual no es posible en producción en Vercel.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+#Proyecto publicado en Vercel:
+formulario-web-zkfg.vercel.app
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+#Funcionalidades
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- Formulario interactivo con validación de campos.
+- Guarda cada registro en un archivo Excel (`registros.xlsx`) en una nueva fila.
+- Se ajustan automáticamente los anchos de columna en Excel.
+- Encabezados con formato profesional (color, negrita y bordes).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+#Cómo usarlo localmente
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. **Clonar el repositorio**
+https://github.com/DAOM43/formulario-web/edit/main/README.md
+cd formulario-web
+
+2. Instalar dependencias
+npm install
+cd server
+npm install
+
+3. Ejecutar el backend local
+node index.js
+
+Ejecutar el frontend
+npm run dev
+
+Abrir en el navegador:
+http://localhost:5173
+
+*Limitaciones del despliegue
+-El backend depende del acceso local al archivo registros.xlsx, lo cual no es posible en Vercel, ya que sus funciones no permiten escritura persistente en disco.
+-Para hacerlo funcional en línea, se recomienda desplegar el backend en Render y conectar el frontend con esa API pública.
+
+*Próxima mejora sugerida
+-Separar el proyecto en dos carpetas: /client para React y /server para Node.js.
+-Subir el backend a Render y conectar desde el frontend con su URL (https://formulario-backend-xxxx.onrender.com).
+
+*Autor
+Proyecto realizado por Daniel Ojeda, estudiante de Ingeniería en Sistemas — Universidad Mariano Gálvez de Guatemala.
